@@ -1,13 +1,13 @@
 import { router } from "expo-router";
 import { Alert, Text, View } from "react-native";
 import { Button, Card, IconBadge, Label, Row, Screen, SectionHeader } from "../../components/ui";
-import { useStore } from "../../lib/store";
+import { useStore, type SyncStatus } from "../../lib/store";
 import { c } from "../../lib/theme";
 
 const GOAL_LABEL = { lose: "Lose weight", maintain: "Maintain weight", gain: "Gain weight" };
 
 export default function ProfileTab() {
-  const { user, data, signOut, deleteAccount } = useStore();
+  const { user, data, signOut, deleteAccount, syncStatus, syncNow } = useStore();
   const p = data.profile!;
   const initials = (user?.name ?? "?").split(" ").map((s) => s[0]).join("").slice(0, 2).toUpperCase();
   const totalWorkouts = data.workouts.length;
@@ -41,6 +41,15 @@ export default function ProfileTab() {
       <Button title="Edit goals" icon="slider.horizontal.3" variant="secondary" onPress={() => router.push("/goals")} style={{ marginTop: 12 }} />
 
       <SectionHeader title="Account" />
+      <Card style={{ paddingVertical: 4, marginBottom: 12 }}>
+        <Row
+          last
+          left={<IconBadge name={SYNC[syncStatus].icon} color={SYNC[syncStatus].color} size={32} />}
+          title={SYNC[syncStatus].title}
+          subtitle={SYNC[syncStatus].subtitle}
+          onPress={syncStatus === "local" ? undefined : syncNow}
+        />
+      </Card>
       <Button title="Log out" icon="rectangle.portrait.and.arrow.right" variant="secondary" onPress={signOut} />
       <Button
         title="Delete account"
@@ -48,7 +57,7 @@ export default function ProfileTab() {
         variant="danger"
         style={{ marginTop: 10 }}
         onPress={() =>
-          Alert.alert("Delete account?", "This permanently erases your account and all your logs from this iPhone.", [
+          Alert.alert("Delete account?", "This permanently erases your account and all of your logs.", [
             { text: "Cancel", style: "cancel" },
             { text: "Delete", style: "destructive", onPress: deleteAccount },
           ])
@@ -57,6 +66,13 @@ export default function ProfileTab() {
     </Screen>
   );
 }
+
+const SYNC: Record<SyncStatus, { title: string; subtitle: string; icon: "icloud.fill" | "arrow.triangle.2.circlepath" | "icloud.slash.fill" | "iphone"; color: string }> = {
+  synced: { title: "Synced", subtitle: "Your data is backed up to your account. Tap to refresh.", icon: "icloud.fill", color: c.green },
+  syncing: { title: "Syncing…", subtitle: "Uploading your latest changes", icon: "arrow.triangle.2.circlepath", color: c.blueBright },
+  offline: { title: "Waiting to sync", subtitle: "Changes are saved and will upload when you're back online. Tap to retry.", icon: "icloud.slash.fill", color: c.yellow },
+  local: { title: "Stored on this iPhone", subtitle: "Add Supabase keys to sync across devices", icon: "iphone", color: c.silver },
+};
 
 function Mini({ label, value }: { label: string; value: number }) {
   return (

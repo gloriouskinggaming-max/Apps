@@ -8,7 +8,8 @@
     "userInterfaceStyle": "dark",
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.gloriouskinggaming.shuttle"
+      "bundleIdentifier": "com.gloriouskinggaming.shuttle",
+      "usesAppleSignIn": true
     },
     "android": {
       "adaptiveIcon": {
@@ -31,7 +32,8 @@
           "cameraPermission": "Shuttle uses the camera to scan food barcodes.",
           "recordAudioAndroid": false
         }
-      ]
+      ],
+      "expo-apple-authentication"
     ],
     "scheme": "shuttle",
     "backgroundColor": "#05070D",

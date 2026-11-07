@@ -28,6 +28,7 @@ function RootStack() {
       <Stack.Protected guard={!signedIn}>
         <Stack.Screen name="login" options={{ headerShown: false }} />
         <Stack.Screen name="signup" options={{ title: "Create account", headerBackTitle: "Back" }} />
+        <Stack.Screen name="reset-password" options={{ title: "Reset password", headerBackTitle: "Back" }} />
       </Stack.Protected>
       <Stack.Protected guard={signedIn && !onboarded}>
         <Stack.Screen name="onboarding" options={{ headerShown: false }} />

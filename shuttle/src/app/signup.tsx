@@ -1,3 +1,4 @@
+import { router } from "expo-router";
 import { useState } from "react";
 import { Alert, KeyboardAvoidingView, ScrollView, Text } from "react-native";
 import { Button, Field } from "../components/ui";
@@ -14,7 +15,13 @@ export default function SignUp() {
   const submit = async () => {
     setBusy(true);
     try {
-      await signUp(name, email, password);
+      const result = await signUp(name, email, password);
+      if (result === "confirm-email") {
+        Alert.alert("Check your email", `We sent a confirmation link to ${email.trim()}. Tap it, then come back and log in.`, [
+          { text: "OK", onPress: () => router.back() },
+        ]);
+        setBusy(false);
+      }
     } catch (e) {
       Alert.alert("Couldn't create account", (e as Error).message);
       setBusy(false);

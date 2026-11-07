@@ -69,6 +69,22 @@ Plaid's bank-linking screen is native code, so it needs a real build of the app.
 - **Stats**: day streak, average calories, on-target days, protein, workouts and calories earned back, plus a weight trend with goal progress, a daily calorie chart and average macros (7, 30 or 90 days)
 - **Profile**: edit goals, log out, delete account
 
+### Turn on Supabase (accounts and cloud sync)
+
+Without Supabase keys, Shuttle stores accounts on the phone only. With them, you get real accounts, **Sign in with Apple**, password reset, and your data syncs across devices. It works offline-first: changes save on the phone instantly and upload in the background.
+
+1. Create a free project at <https://supabase.com/dashboard>.
+2. **SQL Editor → New query**: paste `supabase/migrations/20261107000000_shuttle.sql` and click **Run**. This creates the tables, the security rules (each user can only see their own data) and the delete-account function.
+3. **Project Settings → API**: copy the Project URL and the anon (publishable) key into `shuttle/.env`:
+   ```bash
+   cp shuttle/.env.example shuttle/.env   # then paste the two values
+   ```
+4. **Authentication → Email Templates → Reset Password**: add `{{ .Token }}` to the email so it includes the 6-digit code the app asks for.
+5. *(Optional)* **Authentication → Sign In / Providers → Apple**: enable it and add `com.gloriouskinggaming.shuttle` as a Client ID. To test inside Expo Go, also add `host.exp.Exponent`.
+6. *(Optional)* **Authentication → Sign In / Providers → Email**: turn off "Confirm email" if you don't want new users to have to click a confirmation link first.
+
+Restart `npx expo start` after editing `.env`.
+
 ### Try it on your iPhone
 
 Everything in Shuttle runs in **Expo Go**:
@@ -85,7 +101,7 @@ Scan the QR code with your iPhone. To install it as a standalone app, use `npx e
 
 | | Spendly | Shuttle |
 | --- | --- | --- |
-| Right now | The server saves bank data in a JSON file (`spendly-server/data/db.json`). Budgets, rules and goals are saved on the phone. | Accounts and all logs are saved on the iPhone. The password is hashed and the session is kept in the iOS Keychain. |
+| Right now | The server saves bank data in a JSON file (`spendly-server/data/db.json`). Budgets, rules and goals are saved on the phone. | **Supabase** when keys are set (accounts and synced data). Otherwise everything stays on the iPhone. |
 | Good enough for | Just you | Just you, on one phone |
 | Upgrade when | You want several users, or you want backups | You want to log in on a new phone and keep your data, or share with friends |
 
